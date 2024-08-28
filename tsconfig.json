@@ -8,6 +8,11 @@
       ]
     }
   },
+  "baseUrl": ".",
+  "esModuleInterop": true,
+  "jsx": "react-native",
+  "moduleResolution": "node",
+  "resolveJsonModule": true,
   "include": [
     "**/*.ts",
     "**/*.tsx",
