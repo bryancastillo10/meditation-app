@@ -1,6 +1,25 @@
-import { Slot, Stack} from 'expo-router';
+import { SplashScreen, Stack} from 'expo-router';
+import {useFonts} from 'expo-font';
+import { useEffect } from 'react';
+
+// Prevent Splashscreen from auto hiding until loading all the font assets
+SplashScreen.preventAutoHideAsync();
 
 const RootLayout = () => {
+  const [fontsLoaded, error] = useFonts({
+    "Quicksand-Regular":require("../assets/fonts/Quicksand-Regular.ttf"),
+    "Kanit-SemiBold":require("../assets/fonts/Kanit-SemiBold.ttf")
+  });
+
+  useEffect(()=>{
+    if(error) throw error;
+    if(fontsLoaded) SplashScreen.hideAsync();
+
+  },[fontsLoaded,error])
+
+  if(!fontsLoaded) return null;
+  if(!fontsLoaded && !error) return null;
+
   return (
     <Stack>
       <Stack.Screen
