@@ -94,6 +94,14 @@ const Meditate = () => {
     // Parameters and Router hook
     const {id} = useLocalSearchParams();
     const router = useRouter();
+
+    // Adjust Duration Button
+    const handleAdjustDuration = () => {
+        if (isMeditating) toggleMeditationSession();
+
+        router.push("/(modal)/adjustduration" as never)
+    };
+
     return (
     <View className='flex-1 justify-center '>
         <ImageBackground 
@@ -115,7 +123,15 @@ const Meditate = () => {
                         </Text>
                     </View>
                     <View className='mb-5'>
-                        <CustomButton title="Start Meditation" onPress={toggleMeditationSession}/>
+                        <CustomButton 
+                            title="Start Meditation" 
+                            onPress={toggleMeditationSession}
+                        />
+                        <CustomButton 
+                            title="Adjust Duration" 
+                            onPress={handleAdjustDuration}
+                            containerStyles="mt-4"
+                        />
                     </View>
                 </View>
             </AppGradient>
