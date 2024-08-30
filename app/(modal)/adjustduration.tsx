@@ -1,13 +1,19 @@
+import { useContext } from 'react';
+import { TimerContext } from '@/context/TimerContext';
+
 import {  Pressable, Text, View } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import AppGradient from '@/components/AppGradient';
 import { useRouter } from 'expo-router';
 import CustomButton from '@/components/CustomButton';
 
+
 const AdjustDuration = () => {
   const router = useRouter();
-  
+  const  {setDuration} = useContext(TimerContext);
+
   const handlePress= (duration:number)  => {
+    setDuration(duration);
     router.back();
   }
   
