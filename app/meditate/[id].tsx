@@ -1,21 +1,30 @@
 import { ImageBackground, Pressable, Text, View } from 'react-native';
 import { useState, useEffect } from 'react';
+
 import MEDITATION_IMAGES from '@/constants/meditation-images';
+import { MEDITATION_DATA, AUDIO_FILES } from '@/constants/MeditationData';
+
 import AppGradient from '@/components/AppGradient';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import {Audio} from 'expo-av';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import CustomButton from '@/components/CustomButton';
+
 
 const Meditate = () => {
     const [remainingSeconds, setRemainingSeconds] = useState<number>(10);
     const [isMeditating, setIsMeditating] = useState<boolean>(false);
+    const [audio,setAudio] = useState<Audio.Sound>();
+    const [playingAudio,setPlayingAudio] = useState<boolean>(false);
 
     // Countdown 
     useEffect(()=>{
         let timerId : NodeJS.Timeout;
 
         if (remainingSeconds === 0){
+            if (playingAudio) audio?.pauseAsync();
             setIsMeditating(false);
+            setPlayingAudio(false);
             return;
         }
 
@@ -35,6 +44,54 @@ const Meditate = () => {
 
     const formattedSeconds = String(remainingSeconds % 60).padStart(2,"0");
 
+    // Play the Audio File
+    useEffect(() => {
+        return () => {
+            setRemainingSeconds(10);
+            audio?.unloadAsync();
+        };
+    }, [audio]);
+
+    
+    useEffect(()=>{
+        return () => {
+            audio?.unloadAsync();
+        }
+    },[audio]);
+
+
+    const toggleMeditationSession = async () =>{
+            if(remainingSeconds === 0) setRemainingSeconds(10);
+
+            setIsMeditating(!isMeditating);
+            await togglePlayAndPause();
+    };
+
+    const togglePlayAndPause = async () => {
+        const sound = audio ? audio : await initializeAudio();
+
+        const status = await sound?.getStatusAsync();
+
+        if(status?.isLoaded){
+            await sound.playAsync();
+            setPlayingAudio(true);
+        }else{
+            await sound.pauseAsync();
+            setPlayingAudio(false);
+        }
+    }
+
+    const initializeAudio = async () => {
+        const audioFileName = MEDITATION_DATA[Number(id)-1].audio;
+
+        const {sound } = await Audio.Sound.createAsync(
+            AUDIO_FILES[audioFileName]
+        );
+        setAudio(sound);
+        return sound;
+    };
+
+    // Parameters and Router hook
     const {id} = useLocalSearchParams();
     const router = useRouter();
     return (
@@ -58,7 +115,7 @@ const Meditate = () => {
                         </Text>
                     </View>
                     <View className='mb-5'>
-                        <CustomButton title="Start Meditation" onPress={()=>setIsMeditating(true)}/>
+                        <CustomButton title="Start Meditation" onPress={toggleMeditationSession}/>
                     </View>
                 </View>
             </AppGradient>
